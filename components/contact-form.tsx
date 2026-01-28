@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "./ui/input"
 import { Textarea } from "./ui/textarea"
 import { toast } from "sonner"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Loader2 } from "lucide-react"
 
 const formSchema = z.object({
@@ -40,7 +40,8 @@ const formSchema = z.object({
         .max(500, {
             message: "Message is too long"
         }),
-    honeypot: z.string().optional()
+    honeypot: z.string().optional(),
+    ts: z.string().optional()
 })
 
 export function ContactForm({ children }: { children: React.ReactNode }) {
@@ -51,9 +52,14 @@ export function ContactForm({ children }: { children: React.ReactNode }) {
             email: "",
             subject: "",
             message: "",
-            honeypot: ""
+            honeypot: "",
+            ts: ""
         }
     })
+
+    useEffect(() => {
+        form.setValue("ts", String(Date.now()))
+    }, [form])
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
@@ -147,6 +153,17 @@ export function ContactForm({ children }: { children: React.ReactNode }) {
                             <FormField
                                 control={form.control}
                                 name="honeypot"
+                                render={({ field }) => (
+                                    <FormItem className="hidden">
+                                        <FormControl>
+                                            <Input {...field} />
+                                        </FormControl>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="ts"
                                 render={({ field }) => (
                                     <FormItem className="hidden">
                                         <FormControl>
